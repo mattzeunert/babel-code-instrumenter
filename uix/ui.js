@@ -31,6 +31,9 @@ class App extends React.Component {
             this.setState(data)
         })
     }
+    componentDidUpdate(){
+        this.persistPlugins();
+    }
     render(){
         if (this.state.plugins === undefined) {
             return <div>Loading plugins</div>
@@ -57,8 +60,6 @@ class App extends React.Component {
         var plugins = this.state.plugins.slice();
         plugins[this.state.selectedPluginIndex] = newPlugin;
         this.setState({plugins})
-
-        this.persistPlugins();
     }
     addPlugin(){
         var plugins = this.state.plugins.slice();
@@ -71,7 +72,6 @@ class App extends React.Component {
             plugins,
             selectedPluginIndex: plugins.length - 1
         })
-        this.persistPlugins();
     }
     persistPlugins(){
         chrome.storage.local.set(this.state)
