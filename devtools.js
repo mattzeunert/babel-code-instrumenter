@@ -1,4 +1,4 @@
-chrome.devtools.panels.create("My Panelaaaaa",
+chrome.devtools.panels.create("Babel Code Instrumenter",
     null,
     "panel.html",
     function(panel) {

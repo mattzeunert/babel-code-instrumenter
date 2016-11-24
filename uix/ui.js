@@ -48,12 +48,14 @@ class PluginEditor extends React.Component {
     render(){
         return <div>
             <div className="col-md-4">
+                <h2>Babel Plugin</h2>
                 <textarea
                     value={this.props.plugin.babelPlugin}
                     onChange={(e) => this.updatePlugin("babelPlugin", e.target.value)}>
                 </textarea>
             </div>
             <div className="col-md-4">
+                <h2>Code Injected Into Page</h2>
                 <textarea
                     value={this.props.plugin.injectedCode}
                     onChange={(e) => this.updatePlugin("injectedCode", e.target.value)}>
