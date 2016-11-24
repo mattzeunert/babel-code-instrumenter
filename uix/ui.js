@@ -1,28 +1,41 @@
 class App extends React.Component {
     constructor(props){
         super(props)
-        this.state = {
-            selectedPluginIndex: 0,
-            plugins: [
-                {
-                    name: "plugin 1",
-                    babelPlugin: "babel",
-                    injectedCode: "injected"
-                },
-                {
-                    name: "plugin 2",
-                    babelPlugin: "babel2",
-                    injectedCode: "injected2"
-                },
-                {
-                    name: "plugin 3",
-                    babelPlugin: "babel3",
-                    injectedCode: "injected3"
+        this.state = {}
+    }
+    componentDidMount(){
+        chrome.storage.local.get(null, (data) => {
+            if (data.plugins === undefined){
+                data = {
+                    selectedPluginIndex: 0,
+                    plugins: [
+                        {
+                            name: "plugin 1",
+                            babelPlugin: "babel",
+                            injectedCode: "injected"
+                        },
+                        {
+                            name: "plugin 2",
+                            babelPlugin: "babel2",
+                            injectedCode: "injected2"
+                        },
+                        {
+                            name: "plugin 3",
+                            babelPlugin: "babel3",
+                            injectedCode: "injected3"
+                        }
+                    ]
                 }
-            ]
-        }
+            }
+
+            this.setState(data)
+        })
     }
     render(){
+        if (this.state.plugins === undefined) {
+            return <div>Loading plugins</div>
+        }
+
         var selectedPluginIndex = this.state.selectedPluginIndex;
         var selectedPlugin = this.state.plugins[selectedPluginIndex]
 
@@ -41,6 +54,8 @@ class App extends React.Component {
         var plugins = this.state.plugins.slice();
         plugins[this.state.selectedPluginIndex] = newPlugin;
         this.setState({plugins})
+
+        chrome.storage.local.set(this.state)
     }
 }
 

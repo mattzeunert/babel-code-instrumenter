@@ -4,5 +4,8 @@
   "manifest_version": 2,
   "description": "Write custom babel plugins and run them on arbitrary websites",
   "minimum_chrome_version": "50.0",
-  "devtools_page": "devtools.html"
+  "devtools_page": "devtools.html",
+  "permissions": [
+      "storage"
+  ]
 }
