@@ -1,19 +1,15 @@
 var codeInstrumenter = new ChromeCodeInstrumenter({
-    babelPlugin: function(babel) {
-		debugger
-        return {
-            visitor: {
-                StringLiteral(path){
-					debugger
-					path.node.value = "Cake"
-                }
-            }
-        };
-    },
     logBGPageLogsOnInspectedPage: true
 });
 
 function onBrowserActionClicked(tab) {
-    codeInstrumenter.toggleTabInstrumentation(tab.id)
+	chrome.storage.local.get(function(data){
+		var pluginCode = data.plugins[data.selectedPluginIndex].babelPlugin
+		var babelPlugin = eval("(" + pluginCode + ")")
+
+	    codeInstrumenter.toggleTabInstrumentation(tab.id, {
+			babelPlugin
+		})
+	})
 }
 chrome.browserAction.onClicked.addListener(onBrowserActionClicked);

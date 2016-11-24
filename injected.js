@@ -6466,25 +6466,15 @@
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
-
 		if(!module.webpackPolyfill) {
-
 			module.deprecate = function() {};
-
 			module.paths = [];
-
 			// module.parent = undefined by default
-
 			module.children = [];
-
 			module.webpackPolyfill = 1;
-
 		}
-
 		return module;
-
 	}
-
 
 
 /***/ },
@@ -84630,6 +84620,14 @@
 	    constructor({ babelPlugin }) {
 	        this.documentReadyState = "loading";
 	        this.babelPlugin = babelPlugin;
+	        this.onCodeProcessed = function () {};
+	        this.getNewFunctionCode = (fnStart, code, fnEnd) => fnStart + code + fnEnd;
+	        this.useValue = val => val;
+	
+	        var self = this;
+	        this.preprocessCode = function (code, options) {
+	            return (0, _processJavaScriptCode2.default)(self.babelPlugin)(code, options);
+	        };
 	
 	        this.setGlobalFunctions();
 	    }
@@ -84652,9 +84650,6 @@
 	        this.useValue = useValue;
 	
 	        var self = this;
-	        this.preprocessCode = function (code, options) {
-	            return wrapPreprocessCode.apply(self, [code, options, (0, _processJavaScriptCode2.default)(self.babelPlugin)]);
-	        };
 	    }
 	    enable() {
 	        var self = this;
@@ -85099,10 +85094,14 @@
 	    window.onAfterBodyHTMLInserted = function () {};
 	}
 	if (!window.enableNativeMethodPatching) {
-	    window.enableNativeMethodPatching = function () {};
+	    window.enableNativeMethodPatching = function () {
+	        window.codePreprocessor.enable();
+	    };
 	}
 	if (!window.disableNativeMethodPatching) {
-	    window.disableNativeMethodPatching = function () {};
+	    window.disableNativeMethodPatching = function () {
+	        window.codePreprocessor.disable();
+	    };
 	}
 	
 	window.startLoadingPage = function () {
@@ -85164,7 +85163,6 @@
 	            return;
 	        }
 	        var script = scripts.shift();
-	        debugger
 	        console.log("FromJS: Loading script", script);
 	
 	        if (nativeInnerHTMLDescriptor.get.call(script) === "") {
