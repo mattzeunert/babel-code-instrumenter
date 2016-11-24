@@ -114,7 +114,7 @@
 	    injectedJSCode = text;
 	});
 	
-	class ChromeCodeInstrumentor {
+	class ChromeCodeInstrumenter {
 	    constructor(options) {
 	        var defaultOptions = {
 	            showTabStatusBadge: true
@@ -604,7 +604,10 @@
 	    }
 	};
 	
-	exports.default = ChromeCodeInstrumentor;
+	exports.default = ChromeCodeInstrumenter;
+	
+	
+	window.ChromeCodeInstrumenter = ChromeCodeInstrumenter;
 
 /***/ },
 /* 2 */
