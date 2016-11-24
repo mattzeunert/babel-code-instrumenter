@@ -4,16 +4,16 @@ var codeInstrumenter = new ChromeCodeInstrumenter({
 
 function onBrowserActionClicked(tab) {
 	chrome.storage.local.get(null, function(data){
-		var pluginCode = data.plugins[data.selectedPluginIndex].babelPlugin
+		var plugin = data.plugins[data.selectedPluginIndex];
+		var pluginCode = plugin.babelPlugin
 		var babelPlugin = eval("(" + pluginCode + ")")
 
 	    codeInstrumenter.toggleTabInstrumentation(tab.id, {
 			babelPlugin,
 			onBeforePageLoad: function(callback){
-				debugger
 		        this._executeScript(`
 		            var script2 = document.createElement("script")
-		            script2.text = 'window.sth = function(){ console.log("str lit"); }'
+		            script2.text = decodeURI("${encodeURI(plugin.injectedCode)}")
 		            document.documentElement.appendChild(script2)`
 		        , function(){
 		            // ideally we'd wait for a message from the page,
