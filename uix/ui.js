@@ -66,8 +66,27 @@ class App extends React.Component {
     addPlugin(){
         var plugins = this.state.plugins.slice();
         plugins.push({
-            babelPlugin: "babel",
-            injectedCode: "injjjjjj",
+            babelPlugin: `function babelPlugin(babel) {
+  	return {
+    	visitor: {
+	      	FunctionDeclaration(path) {
+        		var call = babel.types.callExpression(
+          			babel.types.identifier("logCall"),
+                    [babel.types.stringLiteral(path.node.id.name)]
+        		);
+        		var expression = babel.types.expressionStatement(call)
+				path.node.body.body.unshift(expression)
+      		}
+    	}
+	}
+}`,
+            injectedCode: `window.calls = {}
+window.logCall = function(fnName){
+	if (!window.calls[fnName]){
+      	window.calls[fnName] = 0;
+    }
+	window.calls[fnName]++
+}`,
             name: "New Plugin"
         })
         this.setState({
