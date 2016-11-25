@@ -9,21 +9,7 @@ class App extends React.Component {
                 data = {
                     selectedPluginIndex: 0,
                     plugins: [
-                        {
-                            name: "plugin 1",
-                            babelPlugin: "babel",
-                            injectedCode: "injected"
-                        },
-                        {
-                            name: "plugin 2",
-                            babelPlugin: "babel2",
-                            injectedCode: "injected2"
-                        },
-                        {
-                            name: "plugin 3",
-                            babelPlugin: "babel3",
-                            injectedCode: "injected3"
-                        }
+                        makeNewPlugin();
                     ]
                 }
             }
@@ -65,30 +51,7 @@ class App extends React.Component {
     }
     addPlugin(){
         var plugins = this.state.plugins.slice();
-        plugins.push({
-            babelPlugin: `function babelPlugin(babel) {
-  	return {
-    	visitor: {
-	      	FunctionDeclaration(path) {
-        		var call = babel.types.callExpression(
-          			babel.types.identifier("logCall"),
-                    [babel.types.stringLiteral(path.node.id.name)]
-        		);
-        		var expression = babel.types.expressionStatement(call)
-				path.node.body.body.unshift(expression)
-      		}
-    	}
-	}
-}`,
-            injectedCode: `window.calls = {}
-window.logCall = function(fnName){
-	if (!window.calls[fnName]){
-      	window.calls[fnName] = 0;
-    }
-	window.calls[fnName]++
-}`,
-            name: "New Plugin"
-        })
+        plugins.push(makeNewPlugin())
         this.setState({
             plugins,
             selectedPluginIndex: plugins.length - 1
@@ -96,6 +59,33 @@ window.logCall = function(fnName){
     }
     persistPlugins(){
         chrome.storage.local.set(this.state)
+    }
+}
+
+function makeNewPlugin(){
+    return {
+        babelPlugin: `function babelPlugin(babel) {
+return {
+    visitor: {
+        FunctionDeclaration(path) {
+            var call = babel.types.callExpression(
+                babel.types.identifier("logCall"),
+                [babel.types.stringLiteral(path.node.id.name)]
+            );
+            var expression = babel.types.expressionStatement(call)
+            path.node.body.body.unshift(expression)
+        }
+    }
+}
+}`,
+        injectedCode: `window.calls = {}
+window.logCall = function(fnName){
+if (!window.calls[fnName]){
+    window.calls[fnName] = 0;
+}
+window.calls[fnName]++
+}`,
+        name: "New Plugin"
     }
 }
 
