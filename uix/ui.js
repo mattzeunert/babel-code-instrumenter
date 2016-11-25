@@ -4,17 +4,11 @@ class App extends React.Component {
         this.state = {}
     }
     componentDidMount(){
-        chrome.storage.local.get(null, (data) => {
-            if (data.plugins === undefined){
-                data = {
-                    selectedPluginIndex: 0,
-                    plugins: [
-                        makeNewPlugin();
-                    ]
-                }
-            }
+        this.readPlugins();
 
-            this.setState(data)
+        chrome.storage.onChanged.addListener((changes, namespace) => {
+            console.log("onchanged", changes)
+            this.readPlugins();
         })
     }
     componentDidUpdate(){
@@ -59,6 +53,20 @@ class App extends React.Component {
     }
     persistPlugins(){
         chrome.storage.local.set(this.state)
+    }
+    readPlugins(){
+        chrome.storage.local.get(null, (data) => {
+            if (data.plugins === undefined){
+                data = {
+                    selectedPluginIndex: 0,
+                    plugins: [
+                        makeNewPlugin()
+                    ]
+                }
+            }
+
+            this.setState(data)
+        })
     }
 }
 
