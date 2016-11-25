@@ -91,17 +91,17 @@ class PluginEditor extends React.Component {
             </div>
             <div className="col-md-6">
                 <h2>Babel Plugin</h2>
-                <textarea
+                <CodeEditor
                     value={this.props.plugin.babelPlugin}
                     onChange={(e) => this.updatePlugin("babelPlugin", e.target.value)}>
-                </textarea>
+                </CodeEditor>
             </div>
             <div className="col-md-6">
                 <h2>Code Injected Into Page</h2>
-                <textarea
+                <CodeEditor
                     value={this.props.plugin.injectedCode}
                     onChange={(e) => this.updatePlugin("injectedCode", e.target.value)}>
-                </textarea>
+                </CodeEditor>
             </div>
         </div>
     }
@@ -110,6 +110,15 @@ class PluginEditor extends React.Component {
         newPlugin[propertyName] = newValue
 
         this.props.onChange(newPlugin)
+    }
+}
+
+class CodeEditor extends React.Component {
+    render(){
+        return <textarea
+            value={this.props.value}
+            onChange={this.props.onChange}>
+        </textarea>
     }
 }
 
