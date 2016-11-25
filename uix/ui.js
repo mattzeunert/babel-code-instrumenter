@@ -82,7 +82,7 @@ class App extends React.Component {
 
 class PluginEditor extends React.Component {
     render(){
-        return <div class="row">
+        return <div className="row">
             <div className="col-md-12">
                 <input
                     value={this.props.plugin.name}
@@ -91,17 +91,17 @@ class PluginEditor extends React.Component {
             </div>
             <div className="col-md-6">
                 <h2>Babel Plugin</h2>
-                <CodeMirrorEditor
+                <CodeEditor
                     value={this.props.plugin.babelPlugin}
                     onChange={(e) => this.updatePlugin("babelPlugin", e.target.value)}>
-                </CodeMirrorEditor>
+                </CodeEditor>
             </div>
             <div className="col-md-6">
                 <h2>Code Injected Into Page</h2>
-                <CodeMirrorEditor
+                <CodeEditor
                     value={this.props.plugin.injectedCode}
                     onChange={(e) => this.updatePlugin("injectedCode", e.target.value)}>
-                </CodeMirrorEditor>
+                </CodeEditor>
             </div>
         </div>
     }
@@ -110,6 +110,45 @@ class PluginEditor extends React.Component {
         newPlugin[propertyName] = newValue
 
         this.props.onChange(newPlugin)
+    }
+}
+
+class CodeEditor extends React.Component {
+    constructor(props){
+        super(props)
+        this.state = {}
+        this.updateErrors = _.debounce(this.updateErrors, 250)
+    }
+    componentDidUpdate(prevProps, prevState){
+        this.updateErrors()
+    }
+    render(){
+        return <div>
+            <CodeMirrorEditor
+                value={this.props.value}
+                onChange={this.props.onChange}
+            >
+            </CodeMirrorEditor>
+            {
+                this.state.errors ?
+                <pre>{this.state.errors}</pre> :
+                null
+            }
+        </div>
+    }
+    updateErrors(){
+        this.setState({errors: this.getErrors()})
+    }
+    getErrors(){
+        var error = null;
+        try {
+            // just check if syntax is valid
+            Babel.transform(this.props.value, {}).code
+        } catch (err) {
+            error = err.toString()
+        }
+
+        return error;
     }
 }
 
