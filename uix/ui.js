@@ -53,7 +53,9 @@ class App extends React.Component {
                     Add Babel Plugin
                 </button>
             </div>
-            <PluginEditor plugin={selectedPlugin} onChange={this.onPluginEdited.bind(this)}/>
+            <div className="col-md-10">
+                <PluginEditor plugin={selectedPlugin} onChange={this.onPluginEdited.bind(this)}/>
+            </div>
         </div>
     }
     onPluginEdited(newPlugin){
@@ -80,15 +82,21 @@ class App extends React.Component {
 
 class PluginEditor extends React.Component {
     render(){
-        return <div>
-            <div className="col-md-5">
+        return <div class="row">
+            <div className="col-md-12">
+                <input
+                    value={this.props.plugin.name}
+                    onChange={e => this.updatePlugin("name", e.target.value)}
+                ></input>
+            </div>
+            <div className="col-md-6">
                 <h2>Babel Plugin</h2>
                 <textarea
                     value={this.props.plugin.babelPlugin}
                     onChange={(e) => this.updatePlugin("babelPlugin", e.target.value)}>
                 </textarea>
             </div>
-            <div className="col-md-5">
+            <div className="col-md-6">
                 <h2>Code Injected Into Page</h2>
                 <textarea
                     value={this.props.plugin.injectedCode}
