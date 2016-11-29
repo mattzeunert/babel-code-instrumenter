@@ -1,7 +1,9 @@
 class App extends React.Component {
     constructor(props){
         super(props)
-        this.state = {}
+        this.state = {
+            runtimeError: null
+        }
     }
     componentDidMount(){
         this.readPlugins();
@@ -10,6 +12,14 @@ class App extends React.Component {
             console.log("onchanged", changes)
             this.readPlugins();
         })
+
+        this.backgroundPagePort = chrome.runtime.connect({name: 'babel-instrumenter'});
+        this.backgroundPagePort.onMessage.addListener((msg) => {
+            if (msg[0] === "runtimeError"){
+                this.setState({runtimeError: msg[1]})
+            }
+        });
+        this.backgroundPagePort.postMessage(['connect', chrome.devtools.inspectedWindow.tabId])
     }
     componentDidUpdate(){
         this.persistPlugins();
@@ -34,6 +44,7 @@ class App extends React.Component {
                 </button>
             </div>
             <div className="col-md-10">
+                ##{this.state.runtimeError}
                 <PluginEditor plugin={selectedPlugin} onChange={this.onPluginEdited.bind(this)}/>
             </div>
         </div>
@@ -52,7 +63,9 @@ class App extends React.Component {
         })
     }
     persistPlugins(){
-        chrome.storage.local.set(this.state)
+        var {plugins, selectedPluginIndex} = this.state;
+        debugger;
+        chrome.storage.local.set({plugins, selectedPluginIndex})
     }
     readPlugins(){
         chrome.storage.local.get(null, (data) => {
