@@ -57,6 +57,9 @@ class App extends React.Component {
         this.setState({plugins})
     }
     deleteSelectedPlugin(){
+        if (!confirm("Do you really want to delete this plugin?")){
+            return;
+        }
         var plugins = this.state.plugins;
         plugins = removeListItemAtIndex(plugins, this.state.selectedPluginIndex)
         this.setState({
