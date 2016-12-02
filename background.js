@@ -14,14 +14,23 @@ chrome.runtime.onConnect.addListener(function(port) {
 		if (msg[0] === "connect") {
 			port.tabId = msg[1];
 		}
+		if (msg[0] === "enableInstrumentation") {
+			// todo: change this, should be reloadwithinstrenabled, not toggle
+			toggleTab(port.tabId)
+		}
         // Received message from devtools. Do something:
         console.log('Received message from devtools page', msg);
     });
 });
 
 function onBrowserActionClicked(tab) {
+	toggleTab(tab.id)
+}
+chrome.browserAction.onClicked.addListener(onBrowserActionClicked);
+
+function toggleTab(tabId){
 	chrome.storage.local.get(null, function(data){
-		onError(tab.id, null)
+		onError(tabId, null)
 
 		var plugin = data.plugins[data.selectedPluginIndex];
 		var pluginCode = plugin.babelPlugin
@@ -29,14 +38,13 @@ function onBrowserActionClicked(tab) {
 		try {
 			var babelPlugin = eval("(" + pluginCode + ")")
 		} catch (err){
-			onError(tab.id, err);
+			onError(tabId, err);
 			return;
 		}
 
-	    codeInstrumenter.toggleTabInstrumentation(tab.id, {
+	    codeInstrumenter.toggleTabInstrumentation(tabId, {
 			babelPlugin,
 			onInstrumentationError(err, filename, session){
-				debugger
 				onError(session.tabId, err)
 			},
 			onBeforePageLoad: function(callback){
@@ -55,7 +63,6 @@ function onBrowserActionClicked(tab) {
 		})
 	})
 }
-chrome.browserAction.onClicked.addListener(onBrowserActionClicked);
 
 function onError(tabId, err){
 	if (err !== null){
