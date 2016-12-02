@@ -45,7 +45,8 @@ class App extends React.Component {
             </div>
             <div className="col-md-10">
                 ##{this.state.runtimeError}
-                <button onClick={() => this.runPlugin()}>run</button>
+                <button onClick={() => this.runSelectedPlugin()}>run</button>
+                <button onClick={() => this.deleteSelectedPlugin()}>delete</button>
                 <PluginEditor plugin={selectedPlugin} onChange={this.onPluginEdited.bind(this)}/>
             </div>
         </div>
@@ -55,7 +56,15 @@ class App extends React.Component {
         plugins[this.state.selectedPluginIndex] = newPlugin;
         this.setState({plugins})
     }
-    runPlugin(){
+    deleteSelectedPlugin(){
+        var plugins = this.state.plugins;
+        plugins = removeListItemAtIndex(plugins, this.state.selectedPluginIndex)
+        this.setState({
+            plugins,
+            selectedPluginIndex: 0
+        })
+    }
+    runSelectedPlugin(){
         this.backgroundPagePort.postMessage(["enableInstrumentation"])
     }
     addPlugin(){
@@ -184,6 +193,12 @@ class CodeEditor extends React.Component {
 
         return error;
     }
+}
+
+function removeListItemAtIndex(list, index){
+    list = list.slice();
+    list.splice(index, 1);
+    return list
 }
 
 ReactDOM.render(<App />, document.querySelector(".app"))
