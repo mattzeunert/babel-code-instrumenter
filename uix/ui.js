@@ -185,8 +185,7 @@ class PluginEditor extends React.Component {
 
 class PluginSelector extends React.Component {
     render(){
-        return <div>
-            aaa
+        return <div className="plugin-selector">
             <select
                 onChange={(e) => this.props.onChange(e.target.value)}
                 value={this.props.selectedPluginIndex}>
@@ -194,6 +193,14 @@ class PluginSelector extends React.Component {
                     {plugin.name}
                 </option>)}
             </select>
+            <ul>
+                {this.props.plugins.map((plugin, i) => <li
+                    className={i === this.props.selectedPluginIndex ? "selected" : ""}
+                    onClick={() => this.props.onChange(i)}
+                    >
+                    {plugin.name}
+                </li>)}
+            </ul>
         </div>
     }
 }
