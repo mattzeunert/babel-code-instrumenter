@@ -28,11 +28,23 @@
                 text-decoration: underline;
             }
 
+            .plugin-selector ul {
+                padding: 0;
+            }
+            .plugin-selector li {
+                list-style: none;
+                padding: 5px;
+                border-bottom: 1px solid #ccc;
+                cursor: pointer;
+            }
+            .plugin-selector li:first-child {
+                border-top: 1px solid #ccc;
+            }
             .plugin-selector li:hover {
-                color: yellow
+                color: red;
             }
             .plugin-selector li.selected {
-                color: red;
+                color: #337ab7;
             }
             @media screen and (max-width: 991px){
                 .plugin-selector ul {
@@ -43,6 +55,10 @@
                 .plugin-selector select {
                     display: none;
                 }
+            }
+
+            .CodeMirror {
+                border: 1px solid #eee;
             }
         </style>
         <script src="ui/ui.js"></script>

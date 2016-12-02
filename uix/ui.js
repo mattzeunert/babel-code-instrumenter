@@ -38,26 +38,33 @@ class App extends React.Component {
             </div>
         }
 
-        return <div className="row">
-            <div className="col-md-2">
-                <PluginSelector
-                    plugins={this.state.plugins}
-                    selectedPluginIndex={selectedPluginIndex}
-                    onChange={(selectedPluginIndex) => this.setState({selectedPluginIndex})}
-                />
-                <button onClick={() => this.addPlugin()}>
-                    Add Babel Plugin
-                </button>
-            </div>
-            <div className="col-md-10">
-                {runtimeError}
-                <div style={{marginTop: 10}}>
-                    <PluginEditor
-                        plugin={selectedPlugin}
-                        onChange={this.onPluginEdited.bind(this)}
-                        runPlugin={() => this.runSelectedPlugin()}
-                        deletePlugin={() => this.deleteSelectedPlugin()}
-                    />
+        return <div className="container" style={{width: "100%"}}>
+            <div className="row">
+                <div className="col-md-2">
+                    <div style={{padding: 5, borderRight: "1px solid #ccc"}}>
+                        <h2>Babel Plugins</h2>
+                        <PluginSelector
+                            plugins={this.state.plugins}
+                            selectedPluginIndex={selectedPluginIndex}
+                            onChange={(selectedPluginIndex) => this.setState({selectedPluginIndex})}
+                        />
+                        <div style={{textAlign: "center"}}>
+                            <button className="btn btn-sm btn-default" onClick={() => this.addPlugin()}>
+                                Add Babel Plugin
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-md-10">
+                    {runtimeError}
+                    <div style={{marginTop: 10}}>
+                        <PluginEditor
+                            plugin={selectedPlugin}
+                            onChange={this.onPluginEdited.bind(this)}
+                            runPlugin={() => this.runSelectedPlugin()}
+                            deletePlugin={() => this.deleteSelectedPlugin()}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
@@ -138,42 +145,48 @@ window.calls[fnName]++
 
 class PluginEditor extends React.Component {
     render(){
-        return <div className="row">
-            <div className="col-md-12">
-                <button
-                    className="btn btn-sm btn-primary"
-                    style={{marginRight: 5}}
-                    onClick={this.props.runPlugin}>Run</button>
-                <input
-                    value={this.props.plugin.name}
-                    style={{
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        border: "none",
-                        width: 350,
-                        borderBottom: "1px solid #ccc"
-                    }}
-                    onChange={e => this.updatePlugin("name", e.target.value)}
-                ></input>
-                <button
-                    className="btn btn-link"
-                    onClick={this.props.deletePlugin}>Delete</button>
+        return (
+            <div>
+                <div className="row">
+                    <div className="col-md-12">
+                        <button
+                            className="btn btn-sm btn-primary"
+                            style={{marginRight: 5}}
+                            onClick={this.props.runPlugin}>Run</button>
+                        <input
+                            value={this.props.plugin.name}
+                            style={{
+                                fontSize: 20,
+                                fontWeight: "bold",
+                                border: "none",
+                                width: 350,
+                                borderBottom: "1px solid #ccc"
+                            }}
+                            onChange={e => this.updatePlugin("name", e.target.value)}
+                        ></input>
+                        <button
+                            className="btn btn-link"
+                            onClick={this.props.deletePlugin}>Delete</button>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-6">
+                        <h2>Babel Plugin</h2>
+                        <CodeEditor
+                            value={this.props.plugin.babelPlugin}
+                            onChange={(e) => this.updatePlugin("babelPlugin", e.target.value)}>
+                        </CodeEditor>
+                    </div>
+                    <div className="col-md-6">
+                        <h2>Code To Run Before Page Load</h2>
+                        <CodeEditor
+                            value={this.props.plugin.injectedCode}
+                            onChange={(e) => this.updatePlugin("injectedCode", e.target.value)}>
+                        </CodeEditor>
+                    </div>
+                </div>
             </div>
-            <div className="col-md-6">
-                <h2>Babel Plugin</h2>
-                <CodeEditor
-                    value={this.props.plugin.babelPlugin}
-                    onChange={(e) => this.updatePlugin("babelPlugin", e.target.value)}>
-                </CodeEditor>
-            </div>
-            <div className="col-md-6">
-                <h2>Code Injected Into Page</h2>
-                <CodeEditor
-                    value={this.props.plugin.injectedCode}
-                    onChange={(e) => this.updatePlugin("injectedCode", e.target.value)}>
-                </CodeEditor>
-            </div>
-        </div>
+        )
     }
     updatePlugin(propertyName, newValue){
         var newPlugin = Object.assign({}, this.props.plugin)
