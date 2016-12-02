@@ -15,8 +15,7 @@ chrome.runtime.onConnect.addListener(function(port) {
 			port.tabId = msg[1];
 		}
 		if (msg[0] === "enableInstrumentation") {
-			// todo: change this, should be reloadwithinstrenabled, not toggle
-			toggleTab(port.tabId)
+			updateTab(port.tabId, codeInstrumenter.reloadTabWithInstrumentationEnabled.bind(codeInstrumenter))
 		}
         // Received message from devtools. Do something:
         console.log('Received message from devtools page', msg);
@@ -24,11 +23,11 @@ chrome.runtime.onConnect.addListener(function(port) {
 });
 
 function onBrowserActionClicked(tab) {
-	toggleTab(tab.id)
+	updateTab(tab.id, codeInstrumenter.toggleTabInstrumentation.bind(codeInstrumenter))
 }
 chrome.browserAction.onClicked.addListener(onBrowserActionClicked);
 
-function toggleTab(tabId){
+function updateTab(tabId, updateFn){
 	chrome.storage.local.get(null, function(data){
 		onError(tabId, null)
 
@@ -42,7 +41,7 @@ function toggleTab(tabId){
 			return;
 		}
 
-	    codeInstrumenter.toggleTabInstrumentation(tabId, {
+	    updateFn(tabId, {
 			babelPlugin,
 			onInstrumentationError(err, filename, session){
 				onError(session.tabId, err)
