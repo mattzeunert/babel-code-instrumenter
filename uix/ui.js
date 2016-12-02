@@ -9,7 +9,6 @@ class App extends React.Component {
         this.readPlugins();
 
         chrome.storage.onChanged.addListener((changes, namespace) => {
-            console.log("onchanged", changes)
             this.readPlugins();
         })
 
@@ -32,6 +31,13 @@ class App extends React.Component {
         var selectedPluginIndex = this.state.selectedPluginIndex;
         var selectedPlugin = this.state.plugins[selectedPluginIndex]
 
+        var runtimeError = null;
+        if (this.state.runtimeError) {
+            runtimeError = <div style={{marginTop: 10, marginBottom: 0}} className="alert alert-danger">
+                {this.state.runtimeError}
+            </div>
+        }
+
         return <div className="row">
             <div className="col-md-2">
                 <select onChange={(e) => this.setState({selectedPluginIndex: e.target.value})} value={selectedPluginIndex}>
@@ -44,10 +50,15 @@ class App extends React.Component {
                 </button>
             </div>
             <div className="col-md-10">
-                ##{this.state.runtimeError}
-                <button onClick={() => this.runSelectedPlugin()}>run</button>
-                <button onClick={() => this.deleteSelectedPlugin()}>delete</button>
-                <PluginEditor plugin={selectedPlugin} onChange={this.onPluginEdited.bind(this)}/>
+                {runtimeError}
+                <div style={{marginTop: 10}}>
+                    <PluginEditor
+                        plugin={selectedPlugin}
+                        onChange={this.onPluginEdited.bind(this)}
+                        runPlugin={() => this.runSelectedPlugin()}
+                        deletePlugin={() => this.deleteSelectedPlugin()}
+                    />
+                </div>
             </div>
         </div>
     }
@@ -80,7 +91,6 @@ class App extends React.Component {
     }
     persistPlugins(){
         var {plugins, selectedPluginIndex} = this.state;
-        debugger;
         chrome.storage.local.set({plugins, selectedPluginIndex})
     }
     readPlugins(){
@@ -130,10 +140,24 @@ class PluginEditor extends React.Component {
     render(){
         return <div className="row">
             <div className="col-md-12">
+                <button
+                    className="btn btn-sm btn-primary"
+                    style={{marginRight: 5}}
+                    onClick={this.props.runPlugin}>Run</button>
                 <input
                     value={this.props.plugin.name}
+                    style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        border: "none",
+                        width: 350,
+                        borderBottom: "1px solid #ccc"
+                    }}
                     onChange={e => this.updatePlugin("name", e.target.value)}
                 ></input>
+                <button
+                    className="btn btn-link"
+                    onClick={this.props.deletePlugin}>Delete</button>
             </div>
             <div className="col-md-6">
                 <h2>Babel Plugin</h2>
