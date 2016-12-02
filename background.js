@@ -1,6 +1,4 @@
-var codeInstrumenter = new ChromeCodeInstrumenter({
-    logBGPageLogsOnInspectedPage: true
-});
+var codeInstrumenter = new ChromeCodeInstrumenter({});
 
 // http://stackoverflow.com/questions/11661613/chrome-devpanel-extension-communicating-with-background-page
 var ports = [];
@@ -37,6 +35,10 @@ function onBrowserActionClicked(tab) {
 
 	    codeInstrumenter.toggleTabInstrumentation(tab.id, {
 			babelPlugin,
+			onInstrumentationError(err, filename, session){
+				debugger
+				onError(session.tabId, err)
+			},
 			onBeforePageLoad: function(callback){
 		        this._executeScript(`
 		            var script2 = document.createElement("script")

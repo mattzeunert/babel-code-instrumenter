@@ -84615,6 +84615,7 @@
 	var nativeHTMLScriptElementTextDescriptor = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, "text");
 	var nativeFunction = window.Function;
 	var nativeNodeTextContentDescriptor = Object.getOwnPropertyDescriptor(Node.prototype, "textContent");
+	var nativeDocumentWrite = document.write;
 	
 	class CodePreprocessor {
 	    constructor({ babelPlugin }) {
@@ -84623,10 +84624,23 @@
 	        this.onCodeProcessed = function () {};
 	        this.getNewFunctionCode = (fnStart, code, fnEnd) => fnStart + code + fnEnd;
 	        this.useValue = val => val;
+	        this.makeDocumentWrite = function (write) {
+	            return function () {
+	                write.apply(this, arguments);
+	            };
+	        };
+	        this.onBeforeEnable = function () {};
+	        this.onAfterEnable = function () {};
+	        this.onBeforeDisable = function () {};
+	        this.onAfterDisable = function () {};
+	        this.isEnabled = false;
 	
 	        var self = this;
 	        this.preprocessCode = function (code, options) {
-	            return (0, _processJavaScriptCode2.default)(self.babelPlugin)(code, options);
+	            self.disable();
+	            var ret = (0, _processJavaScriptCode2.default)(self.babelPlugin)(code, options);
+	            self.enable();
+	            return ret;
 	        };
 	
 	        this.setGlobalFunctions();
@@ -84644,15 +84658,35 @@
 	            self.documentReadyState = value;
 	        };
 	    }
-	    setOptions({ onCodeProcessed, getNewFunctionCode, useValue, wrapPreprocessCode }) {
+	    setOptions({ onCodeProcessed, getNewFunctionCode, useValue, makeDocumentWrite, onBeforeEnable, onBeforeDisable, onAfterEnable, onAfterDisable }) {
 	        this.onCodeProcessed = onCodeProcessed;
 	        this.getNewFunctionCode = getNewFunctionCode;
 	        this.useValue = useValue;
+	        this.makeDocumentWrite = makeDocumentWrite;
+	
+	        if (onBeforeEnable) {
+	            this.onBeforeEnable = onBeforeEnable;
+	        }
+	        if (onAfterEnable) {
+	            this.onAfterEnable = onAfterEnable;
+	        }
+	        if (onBeforeDisable) {
+	            this.onBeforeDisable = onBeforeDisable;
+	        }
+	        if (onAfterDisable) {
+	            this.onAfterDisable = onAfterDisable;
+	        }
 	
 	        var self = this;
 	    }
 	    enable() {
 	        var self = this;
+	        if (this.isEnabled) {
+	            return;
+	        }
+	        this.isEnabled = true;
+	
+	        self.onBeforeEnable();
 	
 	        function processScriptTagCodeAssignment(code) {
 	            var id = _underscore2.default.uniqueId();
@@ -84714,7 +84748,7 @@
 	            var fnEnd = "}";
 	            code = self.getNewFunctionCode(fnStart, code, fnEnd);
 	
-	            var res = self.preprocessCode(code, { filename: filename });
+	            var res = self.preprocessCode(self.useValue(code), { filename: filename });
 	            args.push(res.code);
 	
 	            var smFilename = filename + ".map";
@@ -84737,14 +84771,54 @@
 	        };
 	
 	        window.Function.prototype = nativeFunction.prototype;
+	
+	        document.write = this.makeDocumentWrite(function (str, beforeAppend) {
+	            var div = originalCreateElement.call(document, "div");
+	            div.innerHTML = str;
+	            nativeInnerHTMLDescriptor.set.call(div, str);
+	
+	            if (beforeAppend) {
+	                beforeAppend(div);
+	            }
+	
+	            var children = Array.from(div.childNodes);
+	            children.forEach(function (child) {
+	                document.body.appendChild(child);
+	            });
+	
+	            return div;
+	        });
+	
+	        this.onAfterEnable();
+	    }
+	    runFunctionWhileDisabled(fn) {
+	        var enabledAtStart = this.isEnabled;
+	        if (enabledAtStart) {
+	            this.disable();
+	        }
+	        try {
+	            var ret = fn();
+	        } finally {
+	            if (enabledAtStart) {
+	                this.enable();
+	            }
+	        }
+	        return ret;
 	    }
 	    disable() {
+	        this.onBeforeDisable();
+	
 	        window.eval = nativeEval;
 	        Object.defineProperty(HTMLScriptElement.prototype, "text", nativeHTMLScriptElementTextDescriptor);
 	        // HTMLScriptElement doesn't normally have textcontent on own prototype, inherits the prop from Node
 	        Object.defineProperty(HTMLScriptElement.prototype, "textContent", nativeNodeTextContentDescriptor);
 	
+	        document.write = nativeDocumentWrite;
 	        window.Function = nativeFunction;
+	
+	        this.isEnabled = false;
+	
+	        this.onAfterDisable();
 	    }
 	}
 	exports.default = CodePreprocessor;
