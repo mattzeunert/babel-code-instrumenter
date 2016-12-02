@@ -40,11 +40,11 @@ class App extends React.Component {
 
         return <div className="row">
             <div className="col-md-2">
-                <select onChange={(e) => this.setState({selectedPluginIndex: e.target.value})} value={selectedPluginIndex}>
-                    {this.state.plugins.map((plugin, i) => <option value={i} key={i}>
-                        {plugin.name}
-                    </option>)}
-                </select>
+                <PluginSelector
+                    plugins={this.state.plugins}
+                    selectedPluginIndex={selectedPluginIndex}
+                    onChange={(selectedPluginIndex) => this.setState({selectedPluginIndex})}
+                />
                 <button onClick={() => this.addPlugin()}>
                     Add Babel Plugin
                 </button>
@@ -180,6 +180,21 @@ class PluginEditor extends React.Component {
         newPlugin[propertyName] = newValue
 
         this.props.onChange(newPlugin)
+    }
+}
+
+class PluginSelector extends React.Component {
+    render(){
+        return <div>
+            aaa
+            <select
+                onChange={(e) => this.props.onChange(e.target.value)}
+                value={this.props.selectedPluginIndex}>
+                {this.props.plugins.map((plugin, i) => <option value={i} key={i}>
+                    {plugin.name}
+                </option>)}
+            </select>
+        </div>
     }
 }
 
