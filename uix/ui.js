@@ -2,8 +2,10 @@ class App extends React.Component {
     constructor(props){
         super(props)
         this.state = {
-            runtimeError: null
+            runtimeError: null,
+            quotaExceeded: false
         }
+        this.persistPlugins = _.debounce(this.persistPlugins, 100)
     }
     componentDidMount(){
         this.readPlugins();
@@ -20,9 +22,6 @@ class App extends React.Component {
         });
         this.backgroundPagePort.postMessage(['connect', chrome.devtools.inspectedWindow.tabId])
     }
-    componentDidUpdate(){
-        this.persistPlugins();
-    }
     render(){
         if (this.state.plugins === undefined) {
             return <div>Loading plugins</div>
@@ -35,6 +34,13 @@ class App extends React.Component {
         if (this.state.runtimeError) {
             runtimeError = <div style={{marginTop: 10, marginBottom: 0}} className="alert alert-danger">
                 {this.state.runtimeError}
+            </div>
+        }
+
+        var quotaExceededMessage = null;
+        if (this.state.quotaExceeded) {
+            quotaExceededMessage = <div className="alert alert-danger" style={{marginTop: 10}}>
+                Plugin code is taking up too much storage space - can{"'"}t save plugin changes!
             </div>
         }
 
@@ -57,6 +63,7 @@ class App extends React.Component {
                 </div>
                 <div className="col-md-10">
                     {runtimeError}
+                    {quotaExceededMessage}
                     <div style={{marginTop: 10}}>
                         <PluginEditor
                             plugin={selectedPlugin}
@@ -69,10 +76,16 @@ class App extends React.Component {
             </div>
         </div>
     }
+    updatePluginData(data){
+        data = Object.assign({}, this.state, data)
+        var {plugins, selectedPluginIndex} = data;
+        this.setState({plugins, selectedPluginIndex})
+        this.persistPlugins();
+    }
     onPluginEdited(newPlugin){
         var plugins = this.state.plugins.slice();
         plugins[this.state.selectedPluginIndex] = newPlugin;
-        this.setState({plugins})
+        this.updatePluginData({plugins})
     }
     deleteSelectedPlugin(){
         if (!confirm("Do you really want to delete this plugin?")){
@@ -80,7 +93,7 @@ class App extends React.Component {
         }
         var plugins = this.state.plugins;
         plugins = removeListItemAtIndex(plugins, this.state.selectedPluginIndex)
-        this.setState({
+        this.updatePluginData({
             plugins,
             selectedPluginIndex: 0
         })
@@ -91,14 +104,19 @@ class App extends React.Component {
     addPlugin(){
         var plugins = this.state.plugins.slice();
         plugins.push(makeNewPlugin())
-        this.setState({
+        this.updatePluginData({
             plugins,
             selectedPluginIndex: plugins.length - 1
         })
     }
     persistPlugins(){
         var {plugins, selectedPluginIndex} = this.state;
-        chrome.storage.local.set({plugins, selectedPluginIndex})
+        chrome.storage.local.set({plugins, selectedPluginIndex}, () => {
+            var quotaExceeded = chrome.runtime.lastError.message === "QUOTA_BYTES quota exceeded"
+            if (this.state.quotaExceeded !== quotaExceeded) {
+                this.setState({quotaExceeded})
+            }
+        })
     }
     readPlugins(){
         chrome.storage.local.get(null, (data) => {
