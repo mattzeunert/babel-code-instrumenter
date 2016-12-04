@@ -71,12 +71,19 @@ function onError(tabId, err){
 		chrome.tabs.executeScript(tabId, {
 			code: `console.error("Babel Instrumenter Error:", decodeURI("${encodedError}"))`
 		})
+
+		chrome.browserAction.setBadgeText({
+            text: "!",
+            tabId: tabId
+        });
+        chrome.browserAction.setBadgeBackgroundColor({
+            tabId: tabId,
+            color: "red"
+        })
 	}
 
 	var port = ports.filter(port => port.tabId === tabId)[0];
 	if (port){
 		port.postMessage(["runtimeError", err])
 	}
-
-
 }
