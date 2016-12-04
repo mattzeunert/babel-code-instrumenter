@@ -112,7 +112,10 @@ class App extends React.Component {
     persistPlugins(){
         var {plugins, selectedPluginIndex} = this.state;
         chrome.storage.local.set({plugins, selectedPluginIndex}, () => {
-            var quotaExceeded = chrome.runtime.lastError.message === "QUOTA_BYTES quota exceeded"
+            var quotaExceeded = false;
+            if (chrome.runtime.lastError){
+                quotaExceeded = chrome.runtime.lastError.message === "QUOTA_BYTES quota exceeded"
+            }
             if (this.state.quotaExceeded !== quotaExceeded) {
                 this.setState({quotaExceeded})
             }
