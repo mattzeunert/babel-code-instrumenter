@@ -244,6 +244,7 @@
 	        this._onBeforePageLoad = options.onBeforePageLoad;
 	        this._onInstrumentationError = options.onInstrumentationError;
 	        this.onClosedCallbackForInstrumenterClass = options.onClosedCallbackForInstrumenterClass;
+	        this._jsExecutionInhibitedMessage = options.jsExecutionInhibitedMessage;
 	
 	        chrome.tabs.get(tabId, tab => {
 	            if (!tab.url || (0, _startsWith2.default)(tab.url, "chrome://")) {
@@ -271,11 +272,19 @@
 	        var self = this;
 	        this._stage = FromJSSessionStages.INITIALIZING;
 	
+	        var jsExecutionInhibitedMessage = '';
+	        if (this._jsExecutionInhibitedMessage) {
+	            jsExecutionInhibitedMessage = this._jsExecutionInhibitedMessage;
+	        }
+	
 	        this._executeScript({
 	            code: `
 	                var el = document.createElement("script")
 	                el.textContent = decodeURI("${ encodeURI(inhibitJSExecutionCode) }")
+	                document.documentElement.appendChild(el)
 	
+	                el = document.createElement("script")
+	                el.textContent = "window.allowJSExecution = inhibitJavaScriptExecution(decodeURI('${ encodeURI(jsExecutionInhibitedMessage) }'))"
 	                document.documentElement.appendChild(el)
 	            `,
 	            runAt: "document_start"

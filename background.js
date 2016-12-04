@@ -43,6 +43,7 @@ function updateTab(tabId, updateFn){
 
 	    updateFn(tabId, {
 			babelPlugin,
+			jsExecutionInhibitedMessage: "Babel Code Instrumenter: JavaScript execution inhibited during initial load",
 			onInstrumentationError(err, filename, session){
 				onError(session.tabId, err)
 			},
