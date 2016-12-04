@@ -159,6 +159,10 @@ window.logCall = function(fnName){
         window.calls[fnName] = 0
     }
     window.calls[fnName]++
+}
+window.onBabelInstrumenterDocumentReady = function(){
+  	var calls = Object.entries(window.calls).sort((a,b) => b[1]-a[1]).slice(0, 20)
+    console.table()
 }`,
         name: "New Plugin"
     }

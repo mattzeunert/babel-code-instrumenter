@@ -48,17 +48,22 @@ function updateTab(tabId, updateFn){
 				onError(session.tabId, err)
 			},
 			onBeforePageLoad: function(callback){
-		        this._executeScript(`
-		            var script2 = document.createElement("script")
-		            script2.text = decodeURI("${encodeURI(plugin.injectedCode)}")
-		            document.documentElement.appendChild(script2)`
-		        , function(){
-		            // ideally we'd wait for a message from the page,
-		            // but for now this will work
-		            setTimeout(function(){
-		                callback();
-		            },100)
-		        })
+				this.executeScriptOnPage(`var instrumenterDocumentReadyInterval = setInterval(function(){
+					if (f__getReadyState(document) === "complete") {
+						clearInterval(instrumenterDocumentReadyInterval);
+						if (window.onBabelInstrumenterDocumentReady){
+							window.onBabelInstrumenterDocumentReady();
+						}
+					}
+				}, 50)`, () => {
+					this.executeScriptOnPage(plugin.injectedCode, function(){
+			            // ideally we'd wait for a message from the page,
+			            // but for now this will work
+			            setTimeout(function(){
+			                callback();
+			            },100)
+			        })
+				})
 		    }
 		})
 	})
