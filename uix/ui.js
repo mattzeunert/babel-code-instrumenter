@@ -166,6 +166,10 @@ window.calls[fnName]++
 
 class PluginEditor extends React.Component {
     render(){
+        if (!this.props.plugin) {
+            return null
+        }
+
         return (
             <div>
                 <div className="row">
