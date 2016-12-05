@@ -56,7 +56,7 @@ class App extends React.Component {
                         <PluginSelector
                             plugins={this.state.plugins}
                             selectedPluginIndex={selectedPluginIndex}
-                            onChange={(selectedPluginIndex) => this.setState({selectedPluginIndex})}
+                            onChange={(selectedPluginIndex) => this.selectPlugin(selectedPluginIndex)}
                         />
                         <div style={{textAlign: "center"}}>
                             <button className="btn btn-sm btn-secondary" onClick={() => this.addPlugin()}>
@@ -79,6 +79,12 @@ class App extends React.Component {
                 </div>
             </div>
         </div>
+    }
+    selectPlugin(selectedPluginIndex){
+        this.setState({
+            selectedPluginIndex,
+            runtimeError: null
+        })
     }
     updatePluginData(data){
         data = Object.assign({}, this.state, data)
