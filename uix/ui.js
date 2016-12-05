@@ -54,7 +54,10 @@ class App extends React.Component {
 
         return <div className="container" style={{width: "100%"}}>
             <div className="row">
-                <div className="col-md-2">
+                <div className="col-md-2" style={{
+                    maxHeight: "100vh",
+                    overflow: "scroll"
+                    }}>
                     <div style={{padding: 5, borderRight: "1px solid #ccc", height: "100vh"}}>
                         <h2>Babel Plugins</h2>
                         <PluginSelector
@@ -62,7 +65,7 @@ class App extends React.Component {
                             selectedPluginIndex={selectedPluginIndex}
                             onChange={(selectedPluginIndex) => this.selectPlugin(selectedPluginIndex)}
                         />
-                        <div style={{textAlign: "center"}}>
+                        <div style={{textAlign: "center", paddingBottom: 10}}>
                             <button className="btn btn-sm btn-secondary" onClick={() => this.addPlugin()}>
                                 Add Babel Plugin
                             </button>
