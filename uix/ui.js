@@ -70,6 +70,17 @@ class App extends React.Component {
                                 Add Babel Plugin
                             </button>
                         </div>
+                        <p>
+                            <a href="https://github.com/mattzeunert/babel-code-instrumenter/issues" target="_blank">
+                                Report an issue
+                            </a><br/>
+                            <a href="https://github.com/thejameskyle/babel-handbook/blob/master/translations/en/plugin-handbook.md" target="_blank">
+                                Babel Plugin Handbook
+                            </a><br/>
+                            <a href="https://astexplorer.net/" target="_blank">
+                                AST Explorer
+                            </a>
+                        </p>
                     </div>
                 </div>
                 <div className="col-md-10" style={{display: "flex", flexDirection: "column", width: "100%"}}>
