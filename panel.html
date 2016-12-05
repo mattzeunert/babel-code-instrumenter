@@ -17,6 +17,9 @@
 
         <link rel="stylesheet" href="bootstrap-flex.css" />
         <style>
+            body {
+                font-size: 14px;
+            }
             h2 {
                 font-size: 16px;
                 padding-top: 20px;
@@ -64,15 +67,13 @@
             .plugin-editor-column {
                 display: flex;
                 flex-direction: column;
-                max-height: 95%;
+                max-height: calc(100% - 10px);
             }
             .plugin-editor-column > h2 {
                 flex: 0;
             }
             .plugin-editor-column > div {
                 flex: 1;
-                overflow: scroll;
-                border: 1px solid #eee;
             }
         </style>
         <script src="ui/ui.js"></script>

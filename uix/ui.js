@@ -257,14 +257,24 @@ class CodeEditor extends React.Component {
         this.updateErrors()
     }
     render(){
-        return <div>
-            <CodeMirrorEditor
-                value={this.props.value}
-                onChange={this.props.onChange}
-            />
+        return <div style={{display: "flex", flexDirection: "column"}}>
+            <div style={{
+                flex: "1",
+                overflow: "scroll",
+                border: "1px solid #eee"
+            }}>
+                <CodeMirrorEditor
+                    value={this.props.value}
+                    onChange={this.props.onChange}
+                />
+            </div>
             {
                 this.state.errors ?
-                <pre>{this.state.errors}</pre> :
+                <pre style={{
+                    background: "#eee",
+                    fontSize: 12,
+                    padding: 4
+                }}>{this.state.errors}</pre> :
                 null
             }
         </div>
