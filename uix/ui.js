@@ -32,8 +32,12 @@ class App extends React.Component {
 
         var runtimeError = null;
         if (this.state.runtimeError) {
-            runtimeError = <div style={{marginTop: 10, marginBottom: 0}} className="alert alert-danger">
-                {this.state.runtimeError}
+            runtimeError = <div className="row">
+                <div className="col-md-12">
+                    <div style={{marginTop: 10, marginBottom: 0}} className="alert alert-danger">
+                        {this.state.runtimeError}
+                    </div>
+                </div>
             </div>
         }
 
@@ -61,7 +65,7 @@ class App extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="col-md-10" style={{display: "flex", width: "100%"}}>
+                <div className="col-md-10" style={{display: "flex", flexDirection: "column", width: "100%"}}>
                     {runtimeError}
                     {quotaExceededMessage}
                     <div style={{paddingTop: 10, flex: 1, height: "100vh"}}>
