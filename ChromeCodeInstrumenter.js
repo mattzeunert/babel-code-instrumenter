@@ -245,6 +245,7 @@
 	        this._onInstrumentationError = options.onInstrumentationError;
 	        this.onClosedCallbackForInstrumenterClass = options.onClosedCallbackForInstrumenterClass;
 	        this._jsExecutionInhibitedMessage = options.jsExecutionInhibitedMessage;
+	        this._loadingMessagePrefix = options.loadingMessagePrefix;
 	
 	        chrome.tabs.get(tabId, tab => {
 	            if (!tab.url || (0, _startsWith2.default)(tab.url, "chrome://")) {
@@ -383,13 +384,16 @@
 	                            self._stage = FromJSSessionStages.ACTIVE;
 	                            self.executeScriptOnPage(`
 	                                if (document.readyState === "complete") {
-	                                    setTimeout(window.startLoadingPage, 0)
+	                                    setTimeout(startLoading, 0)
 	                                } else {
 	                                    document.addEventListener("readystatechange", function(){
 	                                        if (document.readyState === "complete") {
-	                                            window.startLoadingPage()
+	                                            startLoading()
 	                                        }
 	                                    })
+	                                }
+	                                function startLoading(){
+	                                    window.startLoadingPage(decodeURI("${ encodeURI(self._loadingMessagePrefix) }"))
 	                                }
 	                            `);
 	                        }

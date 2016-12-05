@@ -44,6 +44,7 @@ function updateTab(tabId, updateFn){
 	    updateFn(tabId, {
 			babelPlugin,
 			jsExecutionInhibitedMessage: "Babel Code Instrumenter: JavaScript Execution Inhibited (this exception is normal and expected)",
+			loadingMessagePrefix: "Babel Code Instrumenter: ",
 			onInstrumentationError(err, filename, session){
 				onError(session.tabId, err)
 			},

@@ -84850,9 +84850,11 @@
 	    // after parsing
 	
 	    var pageHtmlWithIndices = pageHtml;
+	    var matchedClosingTag = false;
 	    var pageHtmlWithIndices = pageHtmlWithIndices.replace(tagRegExp, function (match, index) {
 	        var isClosingTag = match[1] == "/";
 	        if (isClosingTag) {
+	            matchedClosingTag = true;
 	            return "<index>" + index + "</index>" + match;
 	        } else {
 	            return match + "<index>" + (index + match.length) + "</index>";
@@ -84867,7 +84869,15 @@
 	    var tag = $(tagName).first();
 	    var tagContents = $(tagName).contents();
 	    var fromIndex = getIndexFromComment(tagContents.first());
-	    var toIndex = getIndexFromComment(tagContents.last());
+	    var toIndex;
+	
+	    if (matchedClosingTag) {
+	        toIndex = getIndexFromComment(tagContents.last());
+	    } else {
+	        // sometimes there's an opening tag but no closing tag...
+	        // so just go to end of content
+	        toIndex = pageHtml.length;
+	    }
 	
 	    return {
 	        content: pageHtml.slice(fromIndex, toIndex),
@@ -85178,8 +85188,11 @@
 	    };
 	}
 	
-	window.startLoadingPage = function () {
-	    console.info("FromJS: Loading page...");
+	window.startLoadingPage = function (loadingMessagePrefix) {
+	    if (!loadingMessagePrefix) {
+	        loadingMessagePrefix = "";
+	    }
+	    console.info(loadingMessagePrefix + "Loading page...");
 	    window.forTestsIsLoadingPage = true;
 	
 	    window.fromJSInitialPageHtml = pageHtml;
@@ -85211,6 +85224,32 @@
 	            simulateOnLoad();
 	        });
 	    }
+	
+	    function appendScriptsOneAfterAnother(scripts, container, done) {
+	        next();
+	        function next() {
+	            if (scripts.length === 0) {
+	                done();
+	                return;
+	            }
+	            var script = scripts.shift();
+	            console.log(loadingMessagePrefix + "Loading script", script);
+	
+	            if (nativeInnerHTMLDescriptor.get.call(script) === "") {
+	                // Do this rather than appending script element, because
+	                // requests on https may be cross origin
+	                (0, _sendMessageToBackgroundPage2.default)({
+	                    type: "loadScript",
+	                    url: script.src
+	                }, function () {
+	                    next();
+	                });
+	            } else {
+	                container.appendChild(script);
+	                next();
+	            }
+	        }
+	    }
 	};
 	
 	function simulateOnLoad() {
@@ -85227,32 +85266,6 @@
 	    window.dispatchEvent(new Event("load"));
 	    document.dispatchEvent(new Event("load"));
 	    document.dispatchEvent(new Event("readystatechange"));
-	}
-	
-	function appendScriptsOneAfterAnother(scripts, container, done) {
-	    next();
-	    function next() {
-	        if (scripts.length === 0) {
-	            done();
-	            return;
-	        }
-	        var script = scripts.shift();
-	        console.log("FromJS: Loading script", script);
-	
-	        if (nativeInnerHTMLDescriptor.get.call(script) === "") {
-	            // Do this rather than appending script element, because
-	            // requests on https may be cross origin
-	            (0, _sendMessageToBackgroundPage2.default)({
-	                type: "loadScript",
-	                url: script.src
-	            }, function () {
-	                next();
-	            });
-	        } else {
-	            container.appendChild(script);
-	            next();
-	        }
-	    }
 	}
 
 /***/ }
