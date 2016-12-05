@@ -47,7 +47,7 @@ class App extends React.Component {
         return <div className="container" style={{width: "100%"}}>
             <div className="row">
                 <div className="col-md-2">
-                    <div style={{padding: 5, borderRight: "1px solid #ccc"}}>
+                    <div style={{padding: 5, borderRight: "1px solid #ccc", height: "100vh"}}>
                         <h2>Babel Plugins</h2>
                         <PluginSelector
                             plugins={this.state.plugins}
@@ -61,10 +61,10 @@ class App extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="col-md-10">
+                <div className="col-md-10" style={{display: "flex", width: "100%"}}>
                     {runtimeError}
                     {quotaExceededMessage}
-                    <div style={{marginTop: 10}}>
+                    <div style={{paddingTop: 10, flex: 1, height: "100vh"}}>
                         <PluginEditor
                             plugin={selectedPlugin}
                             onChange={this.onPluginEdited.bind(this)}
@@ -175,7 +175,7 @@ class PluginEditor extends React.Component {
         }
 
         return (
-            <div>
+            <div style={{height: "100%", display: "flex", flexDirection: "column"}}>
                 <div className="row">
                     <div className="col-md-12">
                         <button
@@ -198,15 +198,15 @@ class PluginEditor extends React.Component {
                             onClick={this.props.deletePlugin}>Delete</button>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-6">
+                <div className="row" style={{height: "100%"}}>
+                    <div className="col-md-6 plugin-editor-column">
                         <h2>Babel Plugin</h2>
                         <CodeEditor
                             value={this.props.plugin.babelPlugin}
                             onChange={(e) => this.updatePlugin("babelPlugin", e.target.value)}>
                         </CodeEditor>
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-6 plugin-editor-column" style={{display: "flex", flexDirection: "column"}}>
                         <h2>Code To Run Before Page Load</h2>
                         <CodeEditor
                             value={this.props.plugin.injectedCode}
@@ -261,8 +261,7 @@ class CodeEditor extends React.Component {
             <CodeMirrorEditor
                 value={this.props.value}
                 onChange={this.props.onChange}
-            >
-            </CodeMirrorEditor>
+            />
             {
                 this.state.errors ?
                 <pre>{this.state.errors}</pre> :

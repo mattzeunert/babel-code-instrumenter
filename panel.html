@@ -15,10 +15,11 @@
 
         <script src="underscore.js"></script>
 
-        <link rel="stylesheet" href="bootstrap.css" />
+        <link rel="stylesheet" href="bootstrap-flex.css" />
         <style>
             h2 {
                 font-size: 16px;
+                padding-top: 20px;
             }
             .btn-link {
                 color: #337ab7
@@ -58,6 +59,19 @@
             }
 
             .CodeMirror {
+                height: 100%;
+            }
+            .plugin-editor-column {
+                display: flex;
+                flex-direction: column;
+                max-height: 95%;
+            }
+            .plugin-editor-column > h2 {
+                flex: 0;
+            }
+            .plugin-editor-column > div {
+                flex: 1;
+                overflow: scroll;
                 border: 1px solid #eee;
             }
         </style>
