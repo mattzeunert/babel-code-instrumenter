@@ -58,14 +58,14 @@ class App extends React.Component {
                     maxHeight: "100vh",
                     overflow: "scroll"
                     }}>
-                    <div style={{padding: 5, borderRight: "1px solid #ccc", height: "100vh"}}>
+                    <div className="sidebar-content">
                         <h2>Babel Plugins</h2>
                         <PluginSelector
                             plugins={this.state.plugins}
                             selectedPluginIndex={selectedPluginIndex}
                             onChange={(selectedPluginIndex) => this.selectPlugin(selectedPluginIndex)}
                         />
-                        <div style={{textAlign: "center", paddingBottom: 10}}>
+                        <div style={{paddingBottom: 10}}>
                             <button className="btn btn-sm btn-secondary" onClick={() => this.addPlugin()}>
                                 Add Babel Plugin
                             </button>

@@ -50,14 +50,29 @@
             .plugin-selector li.selected {
                 color: #337ab7;
             }
+            .sidebar-content {
+                padding: 5px;
+                border-right: 1px solid #ccc;
+                height: 100vh;
+            }
             @media screen and (max-width: 991px){
                 .plugin-selector ul {
                     display: none;
+                }
+                .sidebar-content {
+                    border: none;
+                    height: auto;
+                }
+                .sidebar-content > div {
+                    margin-top: 4px;
                 }
             }
             @media screen and (min-width: 992px){
                 .plugin-selector select {
                     display: none;
+                }
+                .sidebar-content > div {
+                    text-align: center;
                 }
             }
 
