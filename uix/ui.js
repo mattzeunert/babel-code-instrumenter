@@ -55,7 +55,7 @@ class App extends React.Component {
                             onChange={(selectedPluginIndex) => this.setState({selectedPluginIndex})}
                         />
                         <div style={{textAlign: "center"}}>
-                            <button className="btn btn-sm btn-default" onClick={() => this.addPlugin()}>
+                            <button className="btn btn-sm btn-secondary" onClick={() => this.addPlugin()}>
                                 Add Babel Plugin
                             </button>
                         </div>
