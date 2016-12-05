@@ -11,7 +11,11 @@ class App extends React.Component {
         this.readPlugins();
 
         chrome.storage.onChanged.addListener((changes, namespace) => {
-            this.readPlugins();
+            var updateFromTabId = changes.lastTabThatWrotePlugins.newValue;
+            var wasChangedInOtherTab = updateFromTabId !== chrome.devtools.inspectedWindow.tabId;
+            if (wasChangedInOtherTab) {
+                this.setState({plugins: changes.plugins.newValue})
+            }
         })
 
         this.backgroundPagePort = chrome.runtime.connect({name: 'babel-instrumenter'});
@@ -121,7 +125,17 @@ class App extends React.Component {
     }
     persistPlugins(){
         var {plugins, selectedPluginIndex} = this.state;
-        chrome.storage.local.set({plugins, selectedPluginIndex}, () => {
+
+        chrome.storage.local.set({
+            plugins,
+            selectedPluginIndex,
+            lastTabThatWrotePlugins: {
+                // I just want to send a message saying what tab updated storage...
+                // random value so lastTabThatWrotePlugins always shows up in changes object
+                random: Math.random(),
+                value: chrome.devtools.inspectedWindow.tabId
+            }
+        }, () => {
             var quotaExceeded = false;
             if (chrome.runtime.lastError){
                 quotaExceeded = chrome.runtime.lastError.message === "QUOTA_BYTES quota exceeded"
