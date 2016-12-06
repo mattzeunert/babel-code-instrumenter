@@ -161,7 +161,8 @@ class App extends React.Component {
     }
     readPlugins(){
         chrome.storage.local.get(null, (data) => {
-            if (data.plugins === undefined){
+            var noPluginsSaved = data.plugins === undefined;
+            if (noPluginsSaved){
                 data = {
                     selectedPluginIndex: 0,
                     plugins: [
@@ -170,7 +171,11 @@ class App extends React.Component {
                 }
             }
 
-            this.setState(data)
+            this.setState(data, () => {
+                if (noPluginsSaved){
+                    this.persistPlugins()
+                }
+            })
         })
     }
 }
@@ -199,8 +204,10 @@ window.logCall = function(fnName){
     window.calls[fnName]++
 }
 window.onBabelInstrumenterDocumentReady = function(){
-  	var calls = Object.entries(window.calls).sort((a,b) => b[1]-a[1]).slice(0, 20)
-    console.table(calls)
+    setTimeout(() => {
+        var calls = Object.entries(window.calls).sort((a,b) => b[1]-a[1]).slice(0, 20)
+        console.table(calls)
+    }, 2000)
 }`,
         name: "New Plugin"
     }
